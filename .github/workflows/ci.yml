@@ -1,34 +1,74 @@
-# This is a sample legacy CI Pipeline for Day 1 Analysis.
-# Goal: Analyse this file and identify missing testing layers according to the Test Pyramid.
+# Day 4 module: multi-stage CI with unit → integration ordering, artefacts on failure.
+# See lab4/README.md and lab4/reference-workflows/ for Jenkins / Azure equivalents.
 
-name: Legacy CI Pipeline
+name: Day 4 — Lab2 multi-stage tests
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  build_application:
+  unit-tests:
+    name: Unit tests (exclude integration)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'temurin'
-      - name: Compile Code (No Tests)
-        run: mvn compile -DskipTests
-        
-  # Note to participant: This skips straight to a mock deployment/E2E without unit/integration tests!
-  deploy_to_staging_and_run_e2e:
-    needs: build_application
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to Staging Environment
-        run: echo "Deploying V1.0 to staging servers..."
+          distribution: temurin
+          java-version: "17"
+          cache: maven
 
-      - name: Run Slow End-to-End UI Tests
-        run: echo "Executing Selenium E2E Suite... this takes 45 minutes!"
+      - name: Run unit tests
+        run: |
+          chmod +x mvnw
+          ./mvnw -B test -DexcludedGroups=integration
+
+      - name: Upload Surefire XML (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-unit-${{ github.run_id }}
+          path: lab2/maven-junit5/target/surefire-reports/
+          if-no-files-found: warn
+
+  integration-tests:
+    name: Integration tests
+    needs: unit-tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      - name: Run integration-tagged tests
+        run: |
+          chmod +x mvnw
+          ./mvnw -B test -Dgroups=integration
+
+      - name: Upload Surefire XML (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-integration-${{ github.run_id }}
+          path: lab2/maven-junit5/target/surefire-reports/
+          if-no-files-found: warn

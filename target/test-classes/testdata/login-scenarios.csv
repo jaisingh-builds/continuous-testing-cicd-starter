@@ -1,0 +1,5 @@
+username,password,expectSuccess
+alice,alice123,true
+bob,bob456,true
+alice,wrong,false
+eve,whatever,false

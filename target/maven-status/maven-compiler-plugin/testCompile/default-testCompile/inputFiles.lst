@@ -1,1 +1,4 @@
-/Users/jaisingh/Projects/trainings/Continuous Testing with CICD-18334/starter-repo/src/test/java/com/example/demo/SampleTests.java
+/Users/jaisingh/Projects/trainings/Continuous Testing with CICD-18334/lab2/maven-junit5/src/test/java/com/training/ctcicd/lab2/tests/IntegrationFlowSampleTest.java
+/Users/jaisingh/Projects/trainings/Continuous Testing with CICD-18334/lab2/maven-junit5/src/test/java/com/training/ctcicd/lab2/tests/LoginDataDrivenTest.java
+/Users/jaisingh/Projects/trainings/Continuous Testing with CICD-18334/lab2/maven-junit5/src/test/java/com/training/ctcicd/lab2/tests/RegressionExtrasTest.java
+/Users/jaisingh/Projects/trainings/Continuous Testing with CICD-18334/lab2/maven-junit5/src/test/java/com/training/ctcicd/lab2/tests/SmokeRoutingTest.java
