@@ -286,6 +286,10 @@ if [ -n "$wrapperSha256Sum" ]; then
   if command -v sha256sum >/dev/null; then
     if echo "$wrapperSha256Sum  $wrapperJarPath" | sha256sum -c >/dev/null 2>&1; then
       wrapperSha256Result=true
+    elif command -v shasum >/dev/null; then
+      if echo "$wrapperSha256Sum  $wrapperJarPath" | shasum -a 256 -c >/dev/null 2>&1; then
+        wrapperSha256Result=true
+      fi
     fi
   elif command -v shasum >/dev/null; then
     if echo "$wrapperSha256Sum  $wrapperJarPath" | shasum -a 256 -c >/dev/null 2>&1; then
