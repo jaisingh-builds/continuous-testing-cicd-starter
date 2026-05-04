@@ -1,0 +1,11 @@
+{
+  "name": "continuous-testing-starter",
+  "private": true,
+  "description": "Day 5 Newman dependency for CI; run `npm install` then `npm run newman`",
+  "scripts": {
+    "newman": "mkdir -p postman/results && newman run postman/collection.json -e postman/env-ci.json -r cli,junit --reporter-junit-export postman/results/newman-junit.xml"
+  },
+  "devDependencies": {
+    "newman": "6.2.1"
+  }
+}

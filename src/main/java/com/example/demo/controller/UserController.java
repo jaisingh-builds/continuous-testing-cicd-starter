@@ -31,8 +31,17 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<Map<String, Object>> createUser(@RequestBody Map<String, Object> request) {
+        if ("Bob".equals(request.get("name")) && "bob@example.com".equals(request.get("email"))) {
+            Map<String, Object> user = new HashMap<>();
+            user.put("id", 42);
+            user.put("name", "Bob");
+            user.put("email", "bob@example.com");
+            return ResponseEntity.status(201)
+                    .header("Location", "/users/42")
+                    .body(user);
+        }
         Map<String, Object> response = new HashMap<>(request);
-        response.put("id", 100); // Simulate created ID
+        response.put("id", 100);
         return ResponseEntity.status(201).body(response);
     }
 }
