@@ -51,6 +51,36 @@ jobs:
           path: target/surefire-reports/
           if-no-files-found: warn
 
+  docker-compose-day6:
+    name: Day 6 — Docker Compose (Postgres + test-runner)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build images and run tests
+        env:
+          DB_PASS: testpass
+        run: docker compose -f docker-compose.test.yml up --build --abort-on-container-exit --exit-code-from test-runner
+
+      - name: Copy Surefire reports from test-runner
+        if: always()
+        run: |
+          mkdir -p surefire-docker-day6
+          docker compose -f docker-compose.test.yml cp test-runner:/app/target/surefire-reports ./surefire-docker-day6/ || true
+
+      - name: Tear down containers and volumes
+        if: always()
+        run: docker compose -f docker-compose.test.yml down -v
+
+      - name: Upload Surefire XML (Day 6 container run)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-docker-day6-${{ github.run_id }}
+          path: surefire-docker-day6/
+          if-no-files-found: warn
+
   api-tests:
     name: REST Assured (Failsafe, groups=api)
     needs: unit-tests

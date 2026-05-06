@@ -1,0 +1,7 @@
+target
+.idea
+*.iml
+.git
+node_modules
+postman/results
+*.log

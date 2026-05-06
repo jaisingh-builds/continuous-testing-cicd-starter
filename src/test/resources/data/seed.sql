@@ -1,5 +1,5 @@
--- Empty seed file for Day 6 lab.
--- Participants will add schema tables and INSERT statements here.
+-- Day 6 seed — mounted into Postgres /docker-entrypoint-initdb.d when using docker-compose.test.yml.
+-- Also loaded by optional Testcontainers tests (see PostgresTcTest).
 
 CREATE TABLE IF NOT EXISTS users (
     id VARCHAR(50) PRIMARY KEY,

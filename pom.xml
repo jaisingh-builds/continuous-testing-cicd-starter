@@ -8,8 +8,8 @@
     <artifactId>lab2-automation-framework</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>Course starter — Lab 2 + Day 5 API tests</name>
-    <description>JUnit 5 + Spring Boot; Day 5 adds REST Assured, JSON Schema, WireMock, Newman in CI</description>
+    <name>Course starter — Lab 2 + Day 5 API + Day 6 Docker tests</name>
+    <description>JUnit 5 + Spring Boot; Day 5 REST Assured; Day 6 Postgres JDBC + Docker Compose + optional Testcontainers</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -17,7 +17,20 @@
         <junit.version>5.11.4</junit.version>
         <spring.boot.version>3.2.7</spring.boot.version>
         <rest-assured.version>6.0.0</rest-assured.version>
+        <testcontainers.version>1.20.4</testcontainers.version>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-bom</artifactId>
+                <version>${testcontainers.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
@@ -62,6 +75,29 @@
             <version>3.9.1</version>
             <scope>test</scope>
         </dependency>
+        <!-- Day 6: in-memory H2 for spring profile defaults; Postgres driver for JDBC + Compose -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>2.2.224</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.4</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -90,6 +126,8 @@
                     </includes>
                     <excludes>
                         <exclude>**/*IT.java</exclude>
+                        <!-- Needs Docker socket on JVM host; excluded from Compose test-runner -->
+                        <exclude>**/PostgresTcTest.java</exclude>
                     </excludes>
                     <parallel>methods</parallel>
                     <threadCount>2</threadCount>
@@ -140,6 +178,23 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
                             <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>with-testcontainers</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <!-- Keep Failsafe *IT out of Surefire; allow PostgresTcTest -->
+                            <excludes combine.self="override">
+                                <exclude>**/*IT.java</exclude>
+                            </excludes>
                         </configuration>
                     </plugin>
                 </plugins>
