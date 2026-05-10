@@ -2,6 +2,41 @@
 
 Spring Boot + JUnit 5 project used from **Day 1 onward**. Earlier labs cover tagging and REST Assured; **Day 6 (Module 6)** adds Dockerised Postgres tests here.
 
+## Day 7 — Report, Gate, Optimise
+
+Day 7 setup is now pre-wired in this starter repository:
+
+- **Allure**: `allure-junit5` and `allure-maven` are configured in `pom.xml`.
+- **JaCoCo gate**: `jacoco-maven-plugin` enforces:
+  - `LINE >= 0.80`
+  - `BRANCH >= 0.70`
+- **Test metadata**: Day 2 lab tests include Allure annotations (`@Feature`, `@Story`, `@Severity`).
+- **CI updates** (`.github/workflows/ci.yml`):
+  - generates Allure report
+  - enforces coverage gate in a dedicated job
+  - uploads Allure and JaCoCo HTML artifacts
+
+**Run locally (from repo root):**
+
+```bash
+chmod +x mvnw
+./mvnw -B clean test --no-transfer-progress
+./mvnw -B allure:report --no-transfer-progress
+./mvnw -B verify -DskipITs --no-transfer-progress
+```
+
+Expected outputs:
+
+- Allure results: `target/allure-results/`
+- Allure report: `target/site/allure-maven-plugin/index.html`
+- JaCoCo report: `target/site/jacoco/index.html`
+
+**Deliberate gate failure demo:**
+
+```bash
+./mvnw -B verify -DskipITs -Djacoco.line.minimum=0.95 -Djacoco.branch.minimum=0.95 --no-transfer-progress
+```
+
 ## Day 6 — Docker Compose + JDBC tests
 
 **Artifacts (repo root)**
